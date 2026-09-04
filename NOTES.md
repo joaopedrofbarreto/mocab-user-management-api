@@ -50,6 +50,11 @@
 - Modelagem de permissões limitada a dois papéis (`admin`, `user`) via enum. Um sistema com necessidades de controle de acesso mais granular se beneficiaria de uma tabela de roles/permissões dedicada.
 - TypeScript e Prisma foram travados em versões estáveis anteriores (5.x e 6.x) em vez das mais recentes (7/8), devido a lançamentos recentes disruptivos nessas ferramentas ainda incompatíveis com parte do ecossistema (ts-node-dev, fluxo clássico de schema). Uma iteração futura poderia reavaliar a migração para essas versões quando o ecossistema estabilizar em torno delas.
 
+
+## Testes realizados
+- Todos os 7 endpoints foram testados manualmente via Postman, incluindo os casos de erro esperados (404 para usuário inexistente, 409 para e-mail duplicado).
+- A collection com as requests utilizadas está salva no arquivo postman_collection.json, na raiz do repositório — pode ser importada diretamente no Postman para reproduzir os testes.
+
 ## Ferramentas de IA utilizadas
 
 - Claude (Anthropic) — utilizado como apoio no planejamento da arquitetura, modelagem de dados, definição dos endpoints, estruturação do cronograma de execução e esclarecimento de dúvidas práticas.
