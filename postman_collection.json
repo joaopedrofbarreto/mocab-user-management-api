@@ -1,0 +1,183 @@
+{
+  "info": {
+    "_postman_id": "409f507e-a1ad-4dfd-8b0c-88bfe4ad6acd",
+    "name": "MOCAB User API",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "57533987",
+    "_collection_link": "https://go.postman.co/collection/57533987-409f507e-a1ad-4dfd-8b0c-88bfe4ad6acd?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Criar usuário",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Joao Pedro\",\r\n  \"email\": \"joao@teste.com\",\r\n  \"password\": \"123456\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Listar todos usuários",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/users",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Lista todos usuários por cargo",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/users?role=USER",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "users"
+          ],
+          "query": [
+            {
+              "key": "role",
+              "value": "USER"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Buscar usuário por ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/users/f813378b-543d-424c-ac16-17d90b071dd0",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "users",
+            "f813378b-543d-424c-ac16-17d90b071dd0"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Atualizar dados gerais",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Joao Pedro Fernandes\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/users/f813378b-543d-424c-ac16-17d90b071dd0",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "users",
+            "f813378b-543d-424c-ac16-17d90b071dd0"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Mudar Cargo",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"role\": \"ADMIN\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/users/f813378b-543d-424c-ac16-17d90b071dd0/role",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "users",
+            "f813378b-543d-424c-ac16-17d90b071dd0",
+            "role"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Remover usuário",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/users/f813378b-543d-424c-ac16-17d90b071dd0",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "users",
+            "f813378b-543d-424c-ac16-17d90b071dd0"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
