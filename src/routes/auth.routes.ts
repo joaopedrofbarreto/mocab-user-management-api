@@ -3,5 +3,14 @@ import { authController } from '../controllers/auth.controller';
 import { loginSchema } from '../schemas/auth.schema';
 
 export default async function authRoutes(app: FastifyInstance) {
-  app.post('/login', { schema: loginSchema }, authController.login);
+  app.post(
+    '/login',
+    {
+      schema: loginSchema,
+      config: {
+        rateLimit: { max: 5, timeWindow: '1 minute' },
+      },
+    },
+    authController.login
+  );
 }

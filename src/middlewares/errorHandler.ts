@@ -10,18 +10,19 @@ export class AppError extends Error {
 }
 
 export function errorHandler(
-    error: FastifyError | AppError,
-    request: FastifyRequest,
-    reply: FastifyReply
-){
-    if (error instanceof AppError) {
-        return reply.status(error.statusCode).send({error: error.message});
-    }
-
-    if ('validation' in error && error.validation) {
-        return reply.status(400).send({error: 'Dados inválidos', details: error.validation});
-    }
-
-    request.log.error(error);
-    return reply.status(500).send({error: 'Erro interno do servidor'});
+  error: FastifyError | AppError,
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  if (error instanceof AppError) {
+    return reply.status(error.statusCode).send({ error: error.message });
+  }
+  if ('validation' in error && error.validation) {
+    return reply.status(400).send({ error: 'Dados inválidos', details: error.validation });
+  }
+  if ('statusCode' in error && typeof error.statusCode === 'number' && error.statusCode < 500) {
+    return reply.status(error.statusCode).send({ error: error.message });
+  }
+  request.log.error(error);
+  return reply.status(500).send({ error: 'Erro interno do servidor' });
 }
