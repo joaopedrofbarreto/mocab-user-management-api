@@ -55,13 +55,13 @@
 <script>
   let token = localStorage.getItem('token') || null;
   let currentRole = null;
+  let currentUserId = null;
 
-  function decodeRole(jwt) {
+  function decodeToken(jwt) {
     try {
-      const payload = JSON.parse(atob(jwt.split('.')[1]));
-      return payload.role;
+      return JSON.parse(atob(jwt.split('.')[1]));
     } catch {
-      return null;
+      return {};
     }
   }
 
@@ -72,6 +72,15 @@
   function showApp() {
     document.getElementById('login-section').classList.add('hidden');
     document.getElementById('app-section').classList.remove('hidden');
+  }
+
+  function logout() {
+    token = null;
+    currentRole = null;
+    localStorage.removeItem('token');
+    document.getElementById('app-section').classList.add('hidden');
+    document.getElementById('login-section').classList.remove('hidden');
+    setStatus('Não autenticado.');
   }
 
   async function login() {
@@ -90,7 +99,9 @@
 
       token = data.token;
       localStorage.setItem('token', token);
-      currentRole = decodeRole(token);
+      const payload = decodeToken(token);
+      currentRole = payload.role;
+      currentUserId = payload.sub;
       setStatus(`Autenticado como ${email} (${currentRole})`);
       showApp();
       loadUsers();
@@ -98,15 +109,6 @@
       document.getElementById('login-error').textContent = err.message;
     }
   }
-
-  function logout() {
-    token = null;
-    currentRole = null;
-    localStorage.removeItem('token');
-    document.getElementById('app-section').classList.add('hidden');
-    document.getElementById('login-section').classList.remove('hidden');
-    setStatus('Não autenticado.');
-    }
 
   async function apiFetch(url, options = {}) {
     const res = await fetch(url, {
@@ -135,6 +137,7 @@
           <td>${u.role}</td>
           <td>
             <button onclick="promptUpdate('${u.id}', '${u.name}')">Editar</button>
+            <button onclick="changePassword('${u.id}')">Trocar senha</button>
             <button onclick="toggleRole('${u.id}', '${u.role}')">Mudar cargo</button>
             <button onclick="removeUser('${u.id}')">Excluir</button>
           </td>
@@ -183,6 +186,35 @@
     }
   }
 
+  async function changePassword(id) {
+    const isSelf = id === currentUserId;
+    const newPassword = prompt('Nova senha (mínimo 6 caracteres):');
+    if (newPassword === null || newPassword === '') return;
+
+    if (newPassword.length < 6) {
+      alert('A senha precisa ter no mínimo 6 caracteres.');
+      return;
+    }
+
+    const body = { password: newPassword };
+    if (isSelf) {
+      const currentPassword = prompt('Senha atual (obrigatória para trocar sua própria senha):');
+      if (currentPassword === null || currentPassword === '') return;
+      body.currentPassword = currentPassword;
+    }
+
+    try {
+      await apiFetch(`/users/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      alert('Senha atualizada com sucesso.');
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
   async function toggleRole(id, current) {
     const newRole = current === 'ADMIN' ? 'USER' : 'ADMIN';
     if (!confirm(`Mudar cargo para ${newRole}?`)) return;
@@ -210,7 +242,9 @@
 
   // Se já tinha token salvo de uma sessão anterior, tenta usar direto
   if (token) {
-    currentRole = decodeRole(token);
+    const payload = decodeToken(token);
+    currentRole = payload.role;
+    currentUserId = payload.sub;
     setStatus(`Autenticado (${currentRole})`);
     showApp();
     loadUsers();

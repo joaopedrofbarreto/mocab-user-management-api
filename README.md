@@ -1,6 +1,6 @@
 # MOCAB User Management API
 
-API REST para gerenciamento de usuários, desenvolvida como atividade prática do processo seletivo do projeto MOCAB (UFJF).
+API REST para gerenciamento de usuários, desenvolvida como atividade prática do processo seletivo do projeto MOCAB (UFJF + MRS).
 
 ## Stack
 - Node.js + TypeScript
@@ -8,15 +8,16 @@ API REST para gerenciamento de usuários, desenvolvida como atividade prática d
 - PostgreSQL (via Prisma)
 - MongoDB (audit log de ações sobre usuários)
 - JWT para autenticação
+- Frontend simples em HTML/JavaScript puro, servido pelo próprio backend
 
-Decisões técnicas detalhadas estão em [`NOTES.md`](./NOTES.md).
+Decisões técnicas e o detalhamento das regras de negócio de cada endpoint estão em [`NOTES.md`](./NOTES.md).
 
 ## Como rodar localmente
 
 ### Pré-requisitos
 - Node.js 18+
 - Uma instância de PostgreSQL (local ou Neon)
-- Uma instância de MongoDB (local ou Atlas) 
+- Uma instância de MongoDB (local ou Atlas)
 
 ### Instalação
 \`\`\`
@@ -42,7 +43,9 @@ npx prisma migrate dev
 \`\`\`
 npm run dev
 \`\`\`
-Servidor sobe em `http://localhost:3000`. Documentação interativa em `http://localhost:3000/docs`.
+Servidor sobe em `http://localhost:3000`.
+- Frontend de demonstração: `http://localhost:3000/`
+- Documentação interativa (Swagger): `http://localhost:3000/docs`
 
 ### Rodar os testes
 \`\`\`
@@ -50,18 +53,27 @@ npm test
 \`\`\`
 
 ## Endpoints
-| Método | Rota | Autenticação |
-|---|---|---|
-| POST | /auth/login | Não |
-| POST | /users | Não |
-| GET | /users | Sim |
-| GET | /users/:id | Sim |
-| PUT | /users/:id | Sim |
-| PATCH | /users/:id/role | Sim (admin) |
-| DELETE | /users/:id | Sim (admin) |
+
+| Método | Rota | O que faz | Quem pode chamar |
+|---|---|---|---|
+| POST | /auth/login | Autentica e retorna um JWT | Público |
+| POST | /users | Cria um novo usuário | Público |
+| GET | /users | Lista usuários (aceita filtros `?role=`, `?createdFrom=`, `?createdTo=`) | Autenticado |
+| GET | /users/:id | Busca um usuário por id | Autenticado |
+| PUT | /users/:id | Atualiza nome/e-mail e, opcionalmente, a senha de um usuário | O próprio usuário, ou admin |
+| PATCH | /users/:id/role | Muda o cargo de um usuário | Apenas admin |
+| DELETE | /users/:id | Remove um usuário | Apenas admin |
+
+O porquê de cada regra (por que login é público, por que o PUT permite auto-edição, por que a troca de senha exige a senha atual, etc.) está detalhado em [`NOTES.md`](./NOTES.md#endpoints-e-regras-de-negócio).
+
+## Frontend de demonstração
+Uma página simples em `/` permite logar, listar, criar, editar, mudar cargo, trocar senha e excluir usuários — consumindo a própria API acima. Feita em HTML/JS puro (sem framework, sem build), servida estaticamente pelo Fastify.
 
 ## Evidências de teste
-Testes automatizados em `src/**/*.test.ts` (rodar com `npm test`). Testes manuais dos endpoints documentados em `postman_collection.json`, importável diretamente no Postman.
+- Testes automatizados em `src/**/*.test.ts` (rodar com `npm test`). Print da execução em `docs/testes.png`.
+- Testes manuais dos 7 endpoints documentados em `postman_collection.json`, importável diretamente no Postman.
+- Prints das bases de dados populadas: `docs/postgres-users.png` (PostgreSQL) e `docs/mongodb-audit-log.png` (MongoDB).
+- Prints do frontend em uso: `docs/frontend-login.png` e `docs/frontend-usuarios.png`.
 
 ## Referências e ferramentas de IA
 Ver seção "Ferramentas de IA utilizadas" em [`NOTES.md`](./NOTES.md).

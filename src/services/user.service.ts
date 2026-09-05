@@ -47,8 +47,12 @@ export const userService = {
     return user;
   },
 
-async update(id: string, data: { name?: string; email?: string }, requestingUser: { sub: string; role: string }) {
-  await this.getById(id);
+async update(
+  id: string,
+  data: { name?: string; email?: string; password?: string; currentPassword?: string },
+  requestingUser: { sub: string; role: string }
+) {
+  const user = await this.getById(id);
 
   const isSelf = requestingUser.sub === id;
   const isAdmin = requestingUser.role === 'ADMIN';
@@ -56,9 +60,28 @@ async update(id: string, data: { name?: string; email?: string }, requestingUser
     throw new AppError('Você só pode editar seus próprios dados', 403);
   }
 
-  const user = await userRepository.update(id, data);
-  await logAuditSafely(id, 'updated', requestingUser.sub, data);
-  return user;
+  const updateData: { name?: string; email?: string; passwordHash?: string } = {
+    name: data.name,
+    email: data.email,
+  };
+
+  if (data.password) {
+    if (isSelf) {
+      if (!data.currentPassword) {
+        throw new AppError('Informe a senha atual para trocar sua senha', 400);
+      }
+      const matches = await bcrypt.compare(data.currentPassword, user.passwordHash);
+      if (!matches) {
+        throw new AppError('Senha atual incorreta', 401);
+      }
+    }
+    // admin trocando a senha de outra pessoa (reset) não precisa da senha atual
+    updateData.passwordHash = await bcrypt.hash(data.password, 10);
+  }
+
+  const updated = await userRepository.update(id, updateData);
+  await logAuditSafely(id, 'updated', requestingUser.sub, { fields: Object.keys(data) });
+  return updated;
 },
 
   async updateRole(id: string, role: Role, performedBy: string) {

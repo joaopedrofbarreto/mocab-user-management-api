@@ -17,6 +17,8 @@ export const updateUserSchema = {
     properties: {
       name: { type: 'string', minLength: 1 },
       email: { type: 'string', format: 'email' },
+      password: { type: 'string', minLength: 6 },
+      currentPassword: { type: 'string', minLength: 1 },
     },
   },
 };

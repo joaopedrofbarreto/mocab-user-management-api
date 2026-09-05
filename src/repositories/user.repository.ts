@@ -21,7 +21,7 @@ export const userRepository = {
 
   findByEmail: (email: string) => prisma.user.findUnique({ where: { email } }),
 
-  update: (id: string, data: { name?: string; email?: string }) =>
+  update: (id: string, data: { name?: string; email?: string; passwordHash?: string }) =>
     prisma.user.update({ where: { id }, data }),
 
   updateRole: (id: string, role: Role) =>

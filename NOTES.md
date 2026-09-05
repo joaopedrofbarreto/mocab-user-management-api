@@ -53,9 +53,10 @@ Busca um usuário específico pelo id.
 - **Regra:** retorna 404 se o id não existir.
 
 ### `PUT /users/:id`
-Atualiza dados gerais (nome, e-mail) de um usuário.
+Atualiza dados gerais (nome, e-mail) e, opcionalmente, a senha de um usuário.
 - **Quem pode chamar:** o próprio usuário autenticado (editando seus próprios dados) **ou** um `ADMIN` (editando qualquer usuário).
-- **Regra:** um usuário comum que tente editar o `id` de outra pessoa recebe 403. Essa checagem foi adicionada depois de um teste manual pelo frontend revelar que a validação inicial checava só "existe um token válido", sem checar "é o dono desse id" — um exemplo real de falha de autorização identificada e corrigida durante os testes.
+- **Regra (dados gerais):** um usuário comum que tente editar o `id` de outra pessoa recebe 403. Essa checagem foi adicionada depois de um teste manual pelo frontend revelar que a validação inicial checava só "existe um token válido", sem checar "é o dono desse id" — um exemplo real de falha de autorização identificada e corrigida durante os testes.
+- **Regra (troca de senha):** o corpo aceita `password` (nova senha, mínimo 6 caracteres) e `currentPassword`. Se o usuário está trocando a **própria** senha, `currentPassword` é obrigatório e validado contra o hash salvo (401 se não bater) — evita que uma sessão comprometida (token roubado, esquecido logado) troque a senha sem confirmar que é o dono de fato digitando. Se for um **admin trocando a senha de outra pessoa** (cenário de reset), `currentPassword` não é exigido.
 
 ### `PATCH /users/:id/role`
 Muda o cargo (`role`) de um usuário.
@@ -72,6 +73,8 @@ Remove um usuário.
 ## Decisões de segurança
 
 - **Hash de senha**: bcrypt — senha nunca é persistida em texto plano.
+- **Política de senha**: mínimo de 6 caracteres, validado tanto no cadastro (`POST /users`) quanto na troca (`PUT /users/:id`) — via schema no backend e replicado no frontend para feedback imediato ao usuário, sem round-trip até o servidor.
+- **Confirmação de senha atual**: ao trocar a própria senha, o usuário precisa informar a senha atual (`currentPassword`), evitando que um token comprometido troque a senha sem confirmação; essa exigência não se aplica quando um admin está resetando a senha de outra conta.
 - **Autenticação**: JWT (`@fastify/jwt`), emitido no login e exigido via middleware `authenticate` nas rotas protegidas.
 - **Autorização**: middleware `authorize(...roles)` separado do `authenticate` — restringe `PATCH /role` e `DELETE` a `ADMIN`. O `PUT` usa uma checagem própria (dono do recurso OU admin), por ter uma regra diferente das demais (ver detalhamento acima).
 - **Rate limiting**: `@fastify/rate-limit` aplicado especificamente à rota de login (5 tentativas por minuto).
