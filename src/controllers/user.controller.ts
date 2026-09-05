@@ -29,16 +29,18 @@ export const userController = {
     return reply.send(user);
   },
 
-  async updateRole(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as any;
-    const { role } = request.body as any;
-    const user = await userService.updateRole(id, role);
-    return reply.send(user);
-  },
+async updateRole(request: FastifyRequest, reply: FastifyReply) {
+  const { id } = request.params as any;
+  const { role } = request.body as any;
+  const performedBy = (request.user as any).sub;
+  const user = await userService.updateRole(id, role, performedBy);
+  return reply.send(user);
+},
 
-  async remove(request: FastifyRequest, reply: FastifyReply) {
-    const { id } = request.params as any;
-    await userService.remove(id);
-    return reply.status(204).send();
-  },
+async remove(request: FastifyRequest, reply: FastifyReply) {
+  const { id } = request.params as any;
+  const performedBy = (request.user as any).sub;
+  await userService.remove(id, performedBy);
+  return reply.status(204).send();
+},
 };
