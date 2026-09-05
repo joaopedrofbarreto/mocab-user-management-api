@@ -15,7 +15,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"name\": \"Joao Pedro\",\r\n  \"email\": \"joao@teste.com\",\r\n  \"password\": \"123456\"\r\n}",
+          "raw": "{\r\n  \"name\": \"Isabella Emily Isabel Campos\",\r\n  \"email\": \"isabella-campos83@uolinc.com\",\r\n  \"password\": \"123456\",\r\n  \"role\": \"ADMIN\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -39,6 +39,16 @@
     {
       "name": "Listar todos usuários",
       "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -58,6 +68,9 @@
     {
       "name": "Lista todos usuários por cargo",
       "request": {
+        "auth": {
+          "type": "bearer"
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -144,7 +157,7 @@
           }
         },
         "url": {
-          "raw": "http://localhost:3000/users/f813378b-543d-424c-ac16-17d90b071dd0/role",
+          "raw": "http://localhost:3000/users/e0235e16-3b34-409c-99d8-bd845922d543/role",
           "protocol": "http",
           "host": [
             "localhost"
@@ -152,7 +165,7 @@
           "port": "3000",
           "path": [
             "users",
-            "f813378b-543d-424c-ac16-17d90b071dd0",
+            "e0235e16-3b34-409c-99d8-bd845922d543",
             "role"
           ]
         }
@@ -174,6 +187,35 @@
           "path": [
             "users",
             "f813378b-543d-424c-ac16-17d90b071dd0"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Gerar token para login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"isabella-campos83@uolinc.com\",\r\n  \"password\": \"123456\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "auth",
+            "login"
           ]
         }
       },

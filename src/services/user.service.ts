@@ -4,6 +4,19 @@ import { userRepository } from '../repositories/user.repository';
 import { AppError } from '../middlewares/errorHandler';
 import { auditRepository } from '../repositories/audit.repository';
 
+async function logAuditSafely(
+  userId: string,
+  action: 'created' | 'updated' | 'deleted' | 'role_changed',
+  performedBy: string,
+  details?: object
+) {
+  try {
+    await auditRepository.log(userId, action, performedBy, details);
+  } catch (err) {
+    console.error('Falha ao registrar audit log (não bloqueante):', err);
+  }
+}
+
 export const userService = {
   async create(data: { name: string; email: string; password: string; role?: Role }) {
     const existing = await userRepository.findByEmail(data.email);
@@ -17,7 +30,7 @@ export const userService = {
       role: data.role ?? 'USER',
     });
 
-    await auditRepository.log(user.id, 'created', user.id);
+    await logAuditSafely(user.id, 'created', user.id);
     return user;
   },
 
@@ -34,20 +47,20 @@ export const userService = {
   async update(id: string, data: { name?: string; email?: string }) {
     await this.getById(id);
     const user = await userRepository.update(id, data);
-    await auditRepository.log(id, 'updated', id, data);
+    await logAuditSafely(id, 'updated', id, data);
     return user;
   },
 
   async updateRole(id: string, role: Role, performedBy: string) {
     await this.getById(id);
     const user = await userRepository.updateRole(id, role);
-    await auditRepository.log(id, 'role_changed', performedBy, { newRole: role });
+    await logAuditSafely(id, 'role_changed', performedBy, { newRole: role });
     return user;
   },
 
   async remove(id: string, performedBy: string) {
     await this.getById(id);
-    await auditRepository.log(id, 'deleted', performedBy);
+    await logAuditSafely(id, 'deleted', performedBy);
     return userRepository.delete(id);
   },
 };
