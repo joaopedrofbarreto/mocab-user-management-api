@@ -25,7 +25,8 @@ export const userController = {
 
   async update(request: FastifyRequest, reply: FastifyReply) {
     const { id } = request.params as any;
-    const user = await userService.update(id, request.body as any);
+    const requestingUser = request.user as { sub: string; role: string };
+    const user = await userService.update(id, request.body as any, requestingUser);
     return reply.send(user);
   },
 

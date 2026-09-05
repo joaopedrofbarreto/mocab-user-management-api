@@ -6,6 +6,8 @@ import swaggerUI from '@fastify/swagger-ui';
 import userRoutes from './routes/user.routes';
 import authRoutes from './routes/auth.routes';
 import { errorHandler } from './middlewares/errorHandler';
+import fastifyStatic from '@fastify/static';
+import path from 'path';
 
 export function buildApp() {
   const app = Fastify({ logger: true });
@@ -24,5 +26,8 @@ export function buildApp() {
   app.setErrorHandler(errorHandler);
   app.register(authRoutes, { prefix: '/auth' });
   app.register(userRoutes, { prefix: '/users' });
+  app.register(fastifyStatic, {
+    root: path.join(__dirname, '..', 'public'),
+  });
   return app;
 }
