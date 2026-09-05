@@ -24,6 +24,7 @@ export function buildApp() {
   });
   app.register(swaggerUI, { routePrefix: '/docs' });
   app.setErrorHandler(errorHandler);
+  app.get('/health', async () => ({ status: 'ok' }));
   app.register(authRoutes, { prefix: '/auth' });
   app.register(userRoutes, { prefix: '/users' });
   app.register(fastifyStatic, {

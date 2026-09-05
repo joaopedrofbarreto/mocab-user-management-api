@@ -22,15 +22,16 @@ async function logAuditSafely(
 
 export const userService = {
   async create(data: { name: string; email: string; password: string }) {
-    const existing = await userRepository.findByEmail(data.email);
+    const email = data.email.toLowerCase();
+    const existing = await userRepository.findByEmail(email);
     if (existing) throw new AppError('E-mail já cadastrado', 409);
 
     const passwordHash = await bcrypt.hash(data.password, 10);
     const user = await userRepository.create({
       name: data.name,
-      email: data.email,
+      email,
       passwordHash,
-      role: 'USER', // cadastro público nunca define role — só o seed inicial ou um admin via PATCH /role
+      role: 'USER',
     });
 
     await logAuditSafely(user.id, 'created', user.id);
@@ -62,7 +63,7 @@ async update(
 
   const updateData: { name?: string; email?: string; passwordHash?: string } = {
     name: data.name,
-    email: data.email,
+    email: data.email ? data.email.toLowerCase() : undefined,
   };
 
   if (data.password) {
