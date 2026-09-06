@@ -28,7 +28,6 @@
 - `details` — objeto livre com o detalhamento da mudança (ex: campos alterados).
 
 ## Endpoints e regras de negócio
-
 Detalhamento do que cada endpoint faz, quem pode chamar, e por quê — não só o formato de entrada/saída (isso já está no Swagger em `/docs`), mas a intenção por trás de cada regra.
 
 ### `POST /auth/login`
@@ -71,7 +70,6 @@ Remove um usuário.
 - **Proteção especial:** o admin inicial do sistema (`admin@mocab.com`) não pode ser excluído, pelo mesmo motivo da proteção contra rebaixamento acima.
 
 ## Decisões de segurança
-
 - **Hash de senha**: bcrypt — senha nunca é persistida em texto plano.
 - **Política de senha**: mínimo de 6 caracteres, validado tanto no cadastro (`POST /users`) quanto na troca (`PUT /users/:id`) — via schema no backend e replicado no frontend para feedback imediato ao usuário, sem round-trip até o servidor.
 - **Confirmação de senha atual**: ao trocar a própria senha, o usuário precisa informar a senha atual (`currentPassword`), evitando que um token comprometido troque a senha sem confirmação; essa exigência não se aplica quando um admin está resetando a senha de outra conta.
@@ -82,7 +80,6 @@ Remove um usuário.
 - **Tratamento de erros de plugins**: o `errorHandler` global foi ajustado para reconhecer o `statusCode` de erros lançados por plugins do Fastify (ex: o 429 do rate limit) — sem esse ajuste, esses erros caíam incorretamente no bloco genérico de 500.
 
 ## Testes realizados
-
 - **Testes unitários** (Vitest) da camada de service, com o repository mockado — cobrem a regra de e-mail duplicado (409) e criação bem-sucedida.
 - **Testes de integração** (Vitest + `app.inject`) das rotas — cobrem autenticação obrigatória (401 sem token) e validação de entrada (400 em dados inválidos).
 - Evidência da execução automatizada em `docs/testes.png`.
@@ -91,14 +88,12 @@ Remove um usuário.
 - Prints das bases de dados populadas em `docs/mongodb-audit-log.png` e `docs/postgres-users.png`.
 
 ## Documentação
-
 - Documentação interativa da API via **Swagger/OpenAPI** (`@fastify/swagger` + `@fastify/swagger-ui`), disponível em `/docs`.
 - Frontend simples de demonstração em `/` (ver seção de Stack).
 - `README.md` com instruções de instalação, execução, variáveis de ambiente e como rodar os testes.
 - Este arquivo (`NOTES.md`), com o detalhamento de regras de negócio por endpoint.
 
 ## Limitações assumidas
-
 - Não foi implementado refresh token — apenas token de acesso com expiração simples. Próximo passo natural seria adicionar renovação de sessão sem exigir novo login.
 - Modelagem de permissões limitada a dois papéis (`admin`, `user`) via enum. Um sistema com necessidades de controle de acesso mais granular se beneficiaria de uma tabela de roles/permissões dedicada.
 - A proteção do admin inicial (`admin@mocab.com`) é feita por comparação direta de e-mail fixo no código, não por uma flag no banco (ex: `isProtected: true`). Funciona para o escopo desta atividade (um único admin protegido), mas não escalaria bem se houvesse necessidade de proteger múltiplas contas.
@@ -107,5 +102,4 @@ Remove um usuário.
 - O frontend não passou por testes automatizados (é HTML/JS simples, servido estaticamente) — a validação foi manual, e serviu inclusive para encontrar a falha de autorização do `PUT` mencionada acima.
 
 ## Ferramentas de IA utilizadas
-
 - Claude (Anthropic) — utilizado como apoio no planejamento da arquitetura, modelagem de dados, definição dos endpoints, estruturação do cronograma de execução e esclarecimento de dúvidas práticas.

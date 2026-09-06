@@ -1,6 +1,6 @@
 # MOCAB User Management API
 
-API REST para gerenciamento de usuários, desenvolvida como atividade prática do processo seletivo do projeto MOCAB (UFJF + MRS).
+API REST para gerenciamento de usuários, desenvolvida como atividade prática do processo seletivo do projeto MOCAB (UFJF).
 
 ## Stack
 - Node.js + TypeScript
